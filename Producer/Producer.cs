@@ -5,9 +5,9 @@ using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Producer_Two
+namespace ProducerCommon
 {
-	public class ProducerTwo
+	public class Producer
 	{
 		private readonly IConnection connection;
 		private readonly IModel channel;
@@ -15,18 +15,23 @@ namespace Producer_Two
 		private readonly EventingBasicConsumer consumer;
 		private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
 		private readonly IBasicProperties props;
-		private const string RESPONSE_QUEUE_NAME = "rpc_response_queue_TWO";
-		private const string EXHANGE_NAME = "4Prod_4Consumer_Exchange";
+		private readonly string responseQueueName;
+		private readonly string exchangeName;
+		private readonly string routingKey;
 
-
-		public ProducerTwo()
+		public Producer(string responeQueue, string exchange, string routing)
 		{
-			var factory = new ConnectionFactory() {HostName = "localhost"};
+			responseQueueName = responeQueue;
+			exchangeName = exchange;
+			routingKey = routing;
+
+			var factory = new ConnectionFactory() { HostName = "localhost" };
 
 			connection = factory.CreateConnection();
 			channel = connection.CreateModel();
-			channel.ExchangeDeclare(EXHANGE_NAME, "direct");
-			replyQueueName = channel.QueueDeclare(RESPONSE_QUEUE_NAME);
+			channel.ExchangeDeclare(exchangeName, "direct");
+			replyQueueName = channel.QueueDeclare(responseQueueName);
+			channel.QueueBind(replyQueueName, exchangeName, routingKey);
 			consumer = new EventingBasicConsumer(channel);
 
 			props = channel.CreateBasicProperties();
@@ -49,8 +54,8 @@ namespace Producer_Two
 		{
 			var messageBytes = Encoding.UTF8.GetBytes(DateTime.Now.ToString(DateTimeFormatInfo.CurrentInfo));
 			channel.BasicPublish(
-				exchange: EXHANGE_NAME,
-				routingKey: "2",
+				exchange: exchangeName,
+				routingKey: routingKey,
 				basicProperties: props,
 				body: messageBytes);
 

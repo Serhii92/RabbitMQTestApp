@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Common;
+using ProducerCommon;
 
 
 namespace Producer_Two
@@ -11,7 +9,10 @@ namespace Producer_Two
 	{
 		static void Main(string[] args)
 		{
-			var rpcClient = new ProducerTwo();
+			var rpcClient = new Producer(
+				Helpers.ResponseQueueName,
+				Helpers.ExchangeName,
+				Helpers.RoutingKey);
 
 			Console.WriteLine(" Producer Two");
 			var startTimeSpan = TimeSpan.Zero;
