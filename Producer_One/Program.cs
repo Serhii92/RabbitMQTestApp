@@ -6,6 +6,7 @@ namespace Producer_One
 {
 	class Program
 	{
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		static void Main(string[] args)
 		{
 			var rpcClient = new Producer(
@@ -22,7 +23,11 @@ namespace Producer_One
 			{
 				Console.WriteLine("Send Message");
 				var response = rpcClient.Call();
-
+				if (response.ReponseStatus == "FAIL")
+				{
+					log.Info(response);
+				}
+				
 				Console.WriteLine(" [.] Got '{0}'", response);
 			}, null, startTimeSpan, periodTimeSpan);
 
