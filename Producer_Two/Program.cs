@@ -12,7 +12,8 @@ namespace Producer_Two
 			var rpcClient = new Producer(
 				Helpers.ResponseQueueName,
 				Helpers.ExchangeName,
-				Helpers.RoutingKey);
+				Helpers.RoutingKey,
+				"Producer TWO");
 
 			Console.WriteLine(" Producer Two");
 			var startTimeSpan = TimeSpan.Zero;

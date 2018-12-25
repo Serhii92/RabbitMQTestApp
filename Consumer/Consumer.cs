@@ -14,13 +14,15 @@ namespace ConsumerCommon
 		private readonly string queueName;
 		private readonly string exchangeName;
 		private readonly string routingKey;
+		private readonly string consumerName;
 
 
-		public Consumer(string queue, string exchange, string routing)
+		public Consumer(string queue, string exchange, string routing, string consumName)
 		{
 			queueName = queue;
 			routingKey = routing;
 			exchangeName = exchange;
+			consumerName = consumName;
 
 			var factory = new ConnectionFactory() { HostName = "localhost" };
 			connection = factory.CreateConnection();
@@ -40,23 +42,27 @@ namespace ConsumerCommon
 
 			consumer.Received += (model, ea) =>
 			{
-				Message response = new Message
-				{
-					ReponseStatus = "consumer"
-				};
 
 				var body = ea.Body;
 				var props = ea.BasicProperties;
 				var replyProps = channel.CreateBasicProperties();
 				replyProps.CorrelationId = props.CorrelationId;
+				Message response = null;
 
 				try
 				{
 					var message = Encoding.UTF8.GetString(body);
 					Message receivedMessage = JsonConvert.DeserializeObject<Message>(message);
-					Console.WriteLine($" Received message({message.ToString()}) at: {DateTime.Now}");
-					//response = receivedMessage;
-					//response.ReponseStatus = CheckProducerTimeAndNumber();
+					Console.WriteLine($"[.] Received message at: {DateTime.Now}");
+					Console.WriteLine(receivedMessage);
+
+					response = new Message()
+					{
+						Id = receivedMessage.Id,
+						Body = receivedMessage.Body,
+						Direction = $"Received from: {consumerName}",
+						ReponseStatus = CheckProducerTimeAndNumber()
+					};
 				}
 				catch (Exception e)
 				{
@@ -65,7 +71,6 @@ namespace ConsumerCommon
 				}
 				finally
 				{
-					//var responseBytes = Encoding.UTF8.GetBytes(response);
 					var jsonString = JsonConvert.SerializeObject(response);
 					var responseBytes = Encoding.UTF8.GetBytes(jsonString);
 					channel.BasicPublish(exchange: "", routingKey: props.ReplyTo,

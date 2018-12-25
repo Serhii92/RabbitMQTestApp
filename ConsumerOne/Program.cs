@@ -12,7 +12,8 @@ namespace ConsumerOne
 				new Consumer(
 					Helpers.QueueName,
 					Helpers.ExchangeName,
-					Helpers.RoutingKey);
+					Helpers.RoutingKey,
+					"Consumer ONE");
 
 			Console.WriteLine("Consumer One");
 

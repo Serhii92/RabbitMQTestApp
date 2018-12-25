@@ -11,7 +11,8 @@ namespace Producer_One
 			var rpcClient = new Producer(
 				Helpers.ResponseQueueName,
 				Helpers.ExchangeName,
-				Helpers.RoutingKey);
+				Helpers.RoutingKey,
+				"Producer ONE");
 
 			Console.WriteLine("Producer One");
 			var startTimeSpan = TimeSpan.Zero;

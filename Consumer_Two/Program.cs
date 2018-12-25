@@ -12,7 +12,8 @@ namespace Consumer_Two
 				new Consumer(
 					Helpers.QueueName,
 					Helpers.ExchangeName,
-					Helpers.RoutingKey);
+					Helpers.RoutingKey,
+					"Consumer TWO");
 
 			Console.WriteLine("Consumer Two");
 

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Globalization;
-using System.Net.Http;
 using System.Text;
 using Common;
 using Newtonsoft.Json;
@@ -16,17 +14,19 @@ namespace ProducerCommon
 		private readonly IModel channel;
 		private readonly string replyQueueName;
 		private readonly EventingBasicConsumer consumer;
-		private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
+		private readonly BlockingCollection<Message> respQueue = new BlockingCollection<Message>();
 		private readonly IBasicProperties props;
 		private readonly string responseQueueName;
 		private readonly string exchangeName;
 		private readonly string routingKey;
+		private readonly string producerName;
 
-		public Producer(string responeQueue, string exchange, string routing)
+		public Producer(string responeQueue, string exchange, string routing, string producer)
 		{
 			responseQueueName = responeQueue;
 			exchangeName = exchange;
 			routingKey = routing;
+			producerName = producer;
 
 			var factory = new ConnectionFactory() { HostName = "localhost" };
 
@@ -34,7 +34,6 @@ namespace ProducerCommon
 			channel = connection.CreateModel();
 			channel.ExchangeDeclare(exchangeName, "direct");
 			replyQueueName = channel.QueueDeclare(responseQueueName);
-			//channel.QueueBind(replyQueueName, exchangeName, routingKey);
 			consumer = new EventingBasicConsumer(channel);
 
 			props = channel.CreateBasicProperties();
@@ -46,20 +45,21 @@ namespace ProducerCommon
 			{
 				var body = ea.Body;
 				var response = Encoding.UTF8.GetString(body);
+				Message receivedResponse = JsonConvert.DeserializeObject<Message>(response);
 				if (ea.BasicProperties.CorrelationId == correlationId)
 				{
-					respQueue.Add(response);
+					respQueue.Add(receivedResponse);
 				}
 			};
 		}
 
-		public string Call()
+		public Message Call()
 		{
 			Message newMessage = new Message
 			{
 				Id = Guid.NewGuid().ToString(),
 				Date = DateTime.Now,
-				ReponseStatus = "producer"
+				Direction = $"Sent from: {producerName}"
 			};
 			var jsonString = JsonConvert.SerializeObject(newMessage);
 			var messageBytes = Encoding.UTF8.GetBytes(jsonString);
