@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Common;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -39,8 +40,10 @@ namespace ConsumerCommon
 
 			consumer.Received += (model, ea) =>
 			{
-					//Message response = new Message();
-					string response = null;
+				Message response = new Message
+				{
+					ReponseStatus = "consumer"
+				};
 
 				var body = ea.Body;
 				var props = ea.BasicProperties;
@@ -50,11 +53,10 @@ namespace ConsumerCommon
 				try
 				{
 					var message = Encoding.UTF8.GetString(body);
+					Message receivedMessage = JsonConvert.DeserializeObject<Message>(message);
 					Console.WriteLine($" Received message({message.ToString()}) at: {DateTime.Now}");
-						//response.Text = $" Received message({message.ToString()}) at: {DateTime.Now}";
-						//response.Status = CheckProducerTimeAndNumber();
-						response = message.ToString() + CheckProducerTimeAndNumber();
-
+					//response = receivedMessage;
+					//response.ReponseStatus = CheckProducerTimeAndNumber();
 				}
 				catch (Exception e)
 				{

@@ -14,12 +14,11 @@ namespace Consumer_Two
 					Helpers.ExchangeName,
 					Helpers.RoutingKey);
 
-			Console.WriteLine("Consumer One");
+			Console.WriteLine("Consumer Two");
 
-			Console.ReadLine();
-			rpcConsumerTwo.Close();
 			Console.WriteLine(" Press [enter] to exit.");
 			Console.ReadLine();
+			rpcConsumerTwo.Close();
 		}
 	}
 }

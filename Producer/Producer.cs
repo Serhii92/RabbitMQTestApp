@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Net.Http;
 using System.Text;
+using Common;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -50,9 +53,16 @@ namespace ProducerCommon
 			};
 		}
 
-		public string Call(string message)
+		public string Call()
 		{
-			var messageBytes = Encoding.UTF8.GetBytes(DateTime.Now.ToString(DateTimeFormatInfo.CurrentInfo));
+			Message newMessage = new Message
+			{
+				Id = Guid.NewGuid().ToString(),
+				Date = DateTime.Now,
+				ReponseStatus = "producer"
+			};
+			var jsonString = JsonConvert.SerializeObject(newMessage);
+			var messageBytes = Encoding.UTF8.GetBytes(jsonString);
 			channel.BasicPublish(
 				exchange: exchangeName,
 				routingKey: routingKey,

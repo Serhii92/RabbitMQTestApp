@@ -21,7 +21,7 @@ namespace Producer_Two
 			var timer = new System.Threading.Timer((e) =>
 			{
 				Console.WriteLine("Send Message");
-				var response = rpcClient.Call("");
+				var response = rpcClient.Call();
 
 				Console.WriteLine(" [.] Got '{0}'", response);
 			}, null, startTimeSpan, periodTimeSpan);
