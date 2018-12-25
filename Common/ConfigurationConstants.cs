@@ -12,6 +12,6 @@ namespace Common
 
 		public const string QUEUE_NAME = "queueName";
 
-		public const string CONSUMER_NUMBER = "consumer";
+		public const string CONSUMER_NUMBER = "routingKeyconsumer";
 	}
 }
