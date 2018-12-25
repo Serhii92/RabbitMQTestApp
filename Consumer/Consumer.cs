@@ -65,8 +65,10 @@ namespace ConsumerCommon
 				}
 				finally
 				{
-					var responseBytes = Encoding.UTF8.GetBytes(response);
-					channel.BasicPublish(exchange: exchangeName, routingKey: props.ReplyTo,
+					//var responseBytes = Encoding.UTF8.GetBytes(response);
+					var jsonString = JsonConvert.SerializeObject(response);
+					var responseBytes = Encoding.UTF8.GetBytes(jsonString);
+					channel.BasicPublish(exchange: "", routingKey: props.ReplyTo,
 						basicProperties: replyProps, body: responseBytes);
 					channel.BasicAck(deliveryTag: ea.DeliveryTag,
 						multiple: false);

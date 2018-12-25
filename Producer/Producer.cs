@@ -34,7 +34,7 @@ namespace ProducerCommon
 			channel = connection.CreateModel();
 			channel.ExchangeDeclare(exchangeName, "direct");
 			replyQueueName = channel.QueueDeclare(responseQueueName);
-			channel.QueueBind(replyQueueName, exchangeName, routingKey);
+			//channel.QueueBind(replyQueueName, exchangeName, routingKey);
 			consumer = new EventingBasicConsumer(channel);
 
 			props = channel.CreateBasicProperties();
